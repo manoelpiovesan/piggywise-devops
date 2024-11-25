@@ -1,4 +1,4 @@
-# Piggywise Devops
+# Piggywise Infra
 Repositório para guardar as configurações de deploy do MVP do Piggywise.
 
 # Estrutura 
