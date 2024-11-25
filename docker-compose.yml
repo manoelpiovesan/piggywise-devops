@@ -1,0 +1,72 @@
+services:
+########################
+#### NGINX SERVICE #####
+########################
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/certificates/live/piggywise.com.br/fullchain.pem:/etc/letsencrypt/live/piggywise.com.br/fullchain.pem
+      - ./nginx/certificates/live/piggywise.com.br/privkey.pem:/etc/letsencrypt/live/piggywise.com.br/privkey.pem
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./piggywise-front/build/web:/usr/share/nginx/html
+    depends_on:
+      - quarkus
+    restart: always
+    networks:
+      - web
+    
+########################
+#### POSTGRES DO APP ###
+########################
+  postgres:
+    image: postgres:latest
+    container_name: postgres_piggywise
+    environment:
+      POSTGRES_USER: manoel
+      POSTGRES_PASSWORD: <SENHA>
+      POSTGRES_DB: piggywise
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - web
+
+########################
+#### BACK-END DO APP ###
+########################
+  quarkus:
+    build:
+      context: .
+      dockerfile: src/main/docker/Dockerfile.jvm
+    container_name: quarkus_app
+    environment:
+      QUARKUS_DATASOURCE_DB_KIND: postgres
+      QUARKUS_DATASOURCE_USERNAME: manoel
+      QUARKUS_DATASOURCE_PASSWORD: <SENHA>
+      QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://postgres:5432/piggywise
+      QUARKUS_HIBERNATE_ORM_DATABASE_GENERATION: update
+      QUARKUS_HTTP_PORT: 8080
+      QUARKUS_HTTP_SSL_PORT: 8443
+    volumes:
+      - ./nginx/certificates/live/piggywise.com.br/fullchain.pem:/etc/letsencrypt/live/piggywise.com.br/fullchain.pem
+      - ./nginx/certificates/live/piggywise.com.br/privkey.pem:/etc/letsencrypt/live/piggywise.com.br/privkey.pem
+      - ./nginx/certificates:/etc/letsencrypt
+    ports:
+      - "8080:8080"
+      - "8443:8443"
+    depends_on:
+      - postgres
+    networks:
+      - web
+
+volumes:
+  postgres_data:
+
+networks:
+  web:
+    driver: bridge
