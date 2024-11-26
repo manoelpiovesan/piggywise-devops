@@ -41,7 +41,7 @@ services:
 ########################
   quarkus:
     build:
-      context: .
+      context: ./piggyqise-back
       dockerfile: src/main/docker/Dockerfile.jvm
     container_name: quarkus_app
     environment:
