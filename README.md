@@ -9,4 +9,6 @@ Repositório para guardar as configurações de deploy do MVP do Piggywise.
     |- /piggywise-back/
     |- /nginx/
         |- nginx.conf
+        |- certificates
+        |- certbot-webroot
 ```
