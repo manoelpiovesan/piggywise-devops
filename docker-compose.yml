@@ -13,6 +13,7 @@ services:
       - ./nginx/certificates/live/piggywise.com.br/privkey.pem:/etc/letsencrypt/live/piggywise.com.br/privkey.pem
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./piggywise-front/build/web:/usr/share/nginx/html
+      - ./piggywise-simulator/build/web:/usr/share/nginx/simulator
     depends_on:
       - quarkus
     restart: always
